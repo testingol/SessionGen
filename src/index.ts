@@ -20,11 +20,6 @@ const authFile = AUTH;
 const usePairingCode = USE_PAIRING_CODE;
 
 
-const MAIN_LOGGER = pino({
-  timestamp: () => `,"time":"${new Date().toISOString()}"`
-});
-const logger = MAIN_LOGGER.child({});
-logger.level = "trace";
 
 
 const P = pino({ level: "silent" });
@@ -49,9 +44,7 @@ async function start(): Promise<void> {
     let sock: WASocket = makeWASocket({
       auth: state,
       printQRInTerminal: false,
-      logger: pino({
-        level: "silent"
-      }),
+      logger: pino({ level: 'fatal' }).child({ level: 'fatal' }),
       browser: Browsers.macOS("Desktop"),
     });
 
