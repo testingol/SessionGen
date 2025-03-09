@@ -1,17 +1,13 @@
 
 /**
- * Configuration settings for the application
+ * Pastebin api goes here lol
  */
-
-/**
- * Pastebin API key
- */
-export const PASTEBIN_API_KEY = "r1eflgs76uuvyj-Q8aQFCVMGSiJpDXSL";
+export const PASTEBIN_API_KEY = " ";
 
 /**
  * Authentication file path
  */
-export const AUTH_FILE = './auth_ts/creds.json';
+export const AUTH_FILE = '../session/creds.json';
 
 /**
  * Toggle between pairing code and QR code (true = pairing code, false = QR code)
