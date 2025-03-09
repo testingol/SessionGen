@@ -1,4 +1,3 @@
-
 import { 
   default as makeWASocket, 
   delay, 
@@ -12,109 +11,88 @@ import pino from "pino";
 import PastebinAPI from "pastebin-js";
 import fs from "fs";
 import { Boom } from "@hapi/boom";
-import { PASTEBIN_API_KEY, AUTH, USE_PAIRING_CODE } from "./config";
+import express from "express";
+import { PASTEBIN_API_KEY, AUTH } from "./config";
 const pastebin = new PastebinAPI(PASTEBIN_API_KEY);
-const authFile = AUTH;
-const usePairingCode = USE_PAIRING_CODE;
+const v = AUTH;
+const app = express();
 
-
-
-
-function clearState(): void {
+app.use(express.json());
+app.use(express.static("public")); 
+function Clean(): void {
   try {
-    if (fs.existsSync('../session')) {
-      const files = fs.readdirSync('../session');
-      for (const file of files) {
-        fs.unlinkSync(`../session/${file}`);
-      }
-      console.log('_cleared_');
-    }
-  } catch (error) {
+    if (fs.existsSync("../session")) {
+      fs.readdirSync("../session").forEach(file => fs.unlinkSync(`../session/${file}`));
+    }} catch (error) {
     console.error(error);
-  }
-}
-
+  }}
 
 async function start(): Promise<void> {
   try {
     const { state, saveCreds } = await useMultiFileAuthState("../session");
-    let sock: WASocket = makeWASocket({
+    let conn: WASocket = makeWASocket({
       auth: state,
       printQRInTerminal: false,
-      logger: pino({ level: 'fatal' }).child({ level: 'fatal' }),
+      logger: pino({ level: "fatal" }).child({ level: "fatal" }),
       browser: Browsers.macOS("Desktop"),
     });
 
-    if (!sock.authState.creds.registered) {
-        await delay(1500);
-       const phone = phone.replace(/[^0-9]/g, '');
-       const code = sock.requestPairingCode(phone);
-        if (!res.headersSent) {
-            res.send({ code: code?.match(/.{1,4}/g)?.join('-') });
-        }
-    }
-    sock.ev.process(async (events) => {
+    session.ev.process(async (events) => {
       if (events["connection.update"]) {
         const update = events["connection.update"] as Partial<ConnectionState>;
         const { connection, lastDisconnect } = update;
         if (connection === "open") {
           await delay(10000);
-          if (fs.existsSync(authFile)) {
-            const db = fs.readFileSync(authFile, 'utf8');
-            let link = await pastebin.createPaste({text: db,title: "session_id",format: null,privacy: 1,});
-            const get_id = link.replace("https://pastebin.com/", "");
-            await sock.sendMessage(sock.user!.id, {
-              text: `*Note Dont share this _id with no one\n *_session id_*:${get_id}`
-            });
+          if (fs.existsSync(v)) {
+            const db = fs.readFileSync(v, "utf8");
+            let _cxl = await pastebin.createPaste({text: db,title: "session_id",format: null,privacy: 1,});
+            const get_id = _cxl.replace("https://pastebin.com/", "");
+            await conn.sendMessage(conn.user!.id, {text: `*Note:* Dont share this _id with anyone\n *_Session ID_*: ${get_id}`,});
             process.exit(0);
-          } else {}
-        }
+          }}
+
         if (connection === "close") {
-          let reason = new Boom(lastDisconnect?.error)?.output?.statusCode;
-          switch (reason) {
-            case DisconnectReason.connectionClosed:
-              console.log('[Connection closed, reconnecting....!]');
-              start();
-              break;
-            case DisconnectReason.connectionLost:
-              console.log('[Connection lost, reconnecting....!]');
-              start();
-              break;
-            case DisconnectReason.loggedOut:
-              console.log('[Logged out, clearing state....]');
-              clearState();
-              process.exit(0);
-              break;
-            case DisconnectReason.restartRequired:
-              console.log('[Restart required, restarting....]');
-              start();
-              break;
-            case DisconnectReason.timedOut:
-              console.log('[Timed out, reconnecting....]');
-              start();
-              break;
-            case DisconnectReason.badSession:
-              console.log('[Bad session, clearing state and restarting....]');
-              clearState();
-              start();
-              break;
-            case DisconnectReason.connectionReplaced:
-              console.log('[Connection replaced, restarting....]');
-              start();
-              break;
-            default:
-              console.error('[Unknown disconnect reason, restarting....]');
-              start();
-              break;
-          }
-        }
+          const _why = new Boom(lastDisconnect?.error)?.output?.statusCode;
+          const reason = DisconnectReason[_why] || "well_😂";
+          console.log(`[]:${reason}`);
+         if (_why !== DisconnectReason.loggedOut) {
+            console.log("Retrying...");
+            await delay(3000); 
+            start();
+          } else {
+            Clean();
+            process.exit(0);
+          }}}
+    });
+
+    conn.ev.on("creds.update", saveCreds);
+    app.get("/", (req, res) => {
+      res.sendFile("index.html", { root: "public" });
+    });
+    app.get("/pair", async (req, res) => {
+      let phone = req.query.code as string;
+      if (!phone) {
+      return res.status(418).json({ message: "_Provide your phone number_📱" });
+      }try {
+        await delay(1500);
+        phone = phone.replace(/[^0-9]/g, ""); 
+        if (!conn.authState.creds.registered) {
+          const code = await conn.requestPairingCode(phone);
+          if (!res.headersSent) {
+            res.json({ code: code?.match(/.{1,4}/g)?.join("-") });
+          }} else {
+          res.status(400).json({ message: "Already registered." });
+        }} catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "err getin pair_code" });
       }
     });
 
-    sock.ev.on("creds.update", saveCreds);
+    app.listen(3000, () => console.log("Server running on port 3000"));
   } catch (error) {
     console.error(error);
     process.exit(1);
   }
 }
 start();
+                       
