@@ -13,8 +13,6 @@ import PastebinAPI from "pastebin-js";
 import fs from "fs";
 import { Boom } from "@hapi/boom";
 import { PASTEBIN_API_KEY, AUTH, USE_PAIRING_CODE } from "./config";
-
-
 const pastebin = new PastebinAPI(PASTEBIN_API_KEY);
 const authFile = AUTH;
 const usePairingCode = USE_PAIRING_CODE;
@@ -22,7 +20,6 @@ const usePairingCode = USE_PAIRING_CODE;
 
 
 
-const P = pino({ level: "silent" });
 function clearState(): void {
   try {
     if (fs.existsSync('../session')) {
