@@ -60,24 +60,15 @@ async function start(): Promise<void> {
         if (connection === "open") {
           await delay(10000);
           if (fs.existsSync(authFile)) {
-            const fileData = fs.readFileSync(authFile, 'utf8');
-            let link = await pastebin.createPaste({
-              text: fileData,
-              title: "session_id",
-              format: null,
-              privacy: 1,
-            });
-            const sessionID = link.replace("https://pastebin.com/", "");
+            const db = fs.readFileSync(authFile, 'utf8');
+            let link = await pastebin.createPaste({text: db,title: "session_id",format: null,privacy: 1,});
+            const get_id = link.replace("https://pastebin.com/", "");
             await sock.sendMessage(sock.user!.id, {
-              text: `_session_id:_ ${sessionID}`
+              text: `*Note Dont share this _id with no one\n *_session id_*:${get_id}`
             });
             process.exit(0);
-          } else {
-            console.error("Auth file not found!");
-          }
+          } else {}
         }
-
-        /** Handle disconnection cases */
         if (connection === "close") {
           let reason = new Boom(lastDisconnect?.error)?.output?.statusCode;
           switch (reason) {
