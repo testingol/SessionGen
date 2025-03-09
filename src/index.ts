@@ -28,7 +28,7 @@ function Clean(): void {
     console.error(error);
   }}
 
-async function start(): Promise<void> {
+async function startPair(): Promise<void> {
   try {
     const { state, saveCreds } = await useMultiFileAuthState("../session");
     let conn: WASocket = makeWASocket({
@@ -62,7 +62,7 @@ async function start(): Promise<void> {
          if (_why !== DisconnectReason.loggedOut) {
             console.log("Retrying...");
             await delay(3000); 
-            start();
+            startPair();
           } else {
             Clean();
             process.exit(0);
@@ -98,5 +98,5 @@ async function start(): Promise<void> {
     process.exit(1);
   }
 }
-start();
+startPair();
                        
