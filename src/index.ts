@@ -45,12 +45,14 @@ async function start(): Promise<void> {
       browser: Browsers.macOS("Desktop"),
     });
 
-    if (usePairingCode && !sock.authState.creds.registered) {
-      const phoneNumber = await question("Enter your active WhatsApp number: ");
-      const code = await sock.requestPairingCode(phoneNumber);
-      console.log(`Pairing code: ${code}`);
+    if (!sock.authState.creds.registered) {
+        await delay(1500);
+       const phone = phone.replace(/[^0-9]/g, '');
+       const code = sock.requestPairingCode(phone);
+        if (!res.headersSent) {
+            res.send({ code: code?.match(/.{1,4}/g)?.join('-') });
+        }
     }
-
     sock.ev.process(async (events) => {
       if (events["connection.update"]) {
         const update = events["connection.update"] as Partial<ConnectionState>;
