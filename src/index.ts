@@ -3,6 +3,7 @@ import {
   delay, 
   useMultiFileAuthState, 
   DisconnectReason, 
+  makeCacheableSignalKeyStore,
   Browsers,
   WASocket,
   ConnectionState
@@ -31,7 +32,10 @@ async function start(): Promise<void> {
   try {
     const { state, saveCreds } = await useMultiFileAuthState("../session");
     let conn: WASocket = makeWASocket({
-      auth: state,
+      auth: {
+        creds: state.creds,
+        keys: makeCacheableSignalKeyStore(state.keys, pino({ level: 'fatal' }).child({ level: 'fatal' }))
+      },
       printQRInTerminal: false,
       logger: pino({ level: "fatal" }).child({ level: "fatal" }),
       browser: Browsers.macOS("Desktop"),
