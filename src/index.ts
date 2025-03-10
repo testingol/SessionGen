@@ -9,12 +9,12 @@ import {
   ConnectionState
 } from "@whiskeysockets/baileys";
 import pino from "pino";
-import { PasteClient, PrivacyLevel, ExpirationTime } from "https://deno.land/x/pastebin@1.0.1/mod.ts";
+import { Pastebin, PrivacyLevel, ExpirationTime } from "https://deno.land/x/pastebin@1.0.1/mod.ts";
 import fs from "fs";
 import { Boom } from "@hapi/boom";
 import express from "express";
 import { paste_dev_api_key, auth, api_user_username, api_user_password, get_prefa } from "./config";
-const pastebin = new PasteClient(paste_dev_api_key, api_user_username, api_user_password);                             
+const pastebin = new Pastebin(paste_dev_api_key, api_user_username, api_user_password);                             
 import express from "express";
 import path from "path";
 import { fileURLToPath } from "url";
