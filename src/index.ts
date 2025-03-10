@@ -15,11 +15,16 @@ import { Boom } from "@hapi/boom";
 import express from "express";
 import { PASTEBIN_API_KEY, AUTH } from "./config";
 const pastebin = new PastebinAPI(PASTEBIN_API_KEY);
+import express from "express";
+import path from "path";
+import { fileURLToPath } from "url";
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 const v = AUTH;
 const app = express();
 
 app.use(express.json());
-app.use(express.static("public")); 
+app.use(express.static(path.join(__dirname, "../public")));
 function Clean(): void {
   try {
     if (fs.existsSync("../session")) {
@@ -71,7 +76,7 @@ async function startPair(): Promise<void> {
 
     conn.ev.on("creds.update", saveCreds);
     app.get("/", (req, res) => {
-      res.sendFile("index.html", { root: "public" });
+      res.sendFile(path.join(__dirname, "../public/index.html"));
     });
     app.get("/pair", async (req, res) => {
       let phone = req.query.code as string;
