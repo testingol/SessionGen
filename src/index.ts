@@ -13,8 +13,8 @@ import { PasteClient, PrivacyLevel, ExpirationTime } from "https://deno.land/x/p
 import fs from "fs";
 import { Boom } from "@hapi/boom";
 import express from "express";
-import { PASTEBIN_API_KEY, AUTH, USERNAME, PASSWORD } from "./config";
-const pastebin = new PasteClient(PASTEBIN_API_KEY,USERNAME,PASSWORD);                             
+import { paste_dev_api_key, auth, api_user_username, api_user_password } from "./config";
+const pastebin = new PasteClient(paste_dev_api_key, api_user_username, api_user_password);                             
 import express from "express";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -58,7 +58,7 @@ async function startPair(): Promise<void> {
             privacy: PrivacyLevel.PRIVATE,
             expiration: ExpirationTime.NEVER,
            });
-            const get_id = `Aqua~${_cxl.replace("https://pastebin.com/", "")}`;
+            const get_id = `A${_cxl.replace("https://pastebin.com/", "")}`;
             await conn.sendMessage(conn.user!.id, {text: `*Note:* Dont share this _id with anyone\n *_Session ID_*: ${get_id}`,});
             process.exit(0);
           }}
