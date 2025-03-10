@@ -9,12 +9,12 @@ import {
   ConnectionState
 } from "@whiskeysockets/baileys";
 import pino from "pino";
-import PastebinAPI from "pastebin-js";
+import { PasteClient, PrivacyLevel, ExpirationTime } from "https://deno.land/x/pastebin@1.0.1/mod.ts";
 import fs from "fs";
 import { Boom } from "@hapi/boom";
 import express from "express";
-import { PASTEBIN_API_KEY, AUTH } from "./config";
-const pastebin = new PastebinAPI(PASTEBIN_API_KEY);
+import { PASTEBIN_API_KEY, AUTH, USERNAME, PASSWORD } from "./config";
+const pastebin = new PasteClient(PASTEBIN_API_KEY,USERNAME,PASSWORD);                             
 import express from "express";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -54,7 +54,10 @@ async function startPair(): Promise<void> {
           await delay(10000);
           if (fs.existsSync(v)) {
             const db = fs.readFileSync(v, "utf8");
-            let _cxl = await pastebin.createPaste({text: db,title: "session_id",format: null,privacy: 1,});
+            let _cxl = await pastebin.createPaste({text: db,title: "session_id",format: null,
+            privacy: PrivacyLevel.PRIVATE,
+            expiration: ExpirationTime.NEVER,
+           });
             const get_id = `Aqua~${_cxl.replace("https://pastebin.com/", "")}`;
             await conn.sendMessage(conn.user!.id, {text: `*Note:* Dont share this _id with anyone\n *_Session ID_*: ${get_id}`,});
             process.exit(0);
