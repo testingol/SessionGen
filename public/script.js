@@ -10,7 +10,7 @@ async function Pairing() {
         const data = await voidi.json();
         if (voidi.ok) {
             localStorage.setItem("code", data.code); 
-            window.location.href = "code.html"; 
+            window.location.href = "getcode.html"; 
         } else {
         alert(`${data.message || "err"}`);
         }} catch (error) {
