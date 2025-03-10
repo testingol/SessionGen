@@ -50,7 +50,7 @@ async function startPair(): Promise<void> {
           if (fs.existsSync(v)) {
             const db = fs.readFileSync(v, "utf8");
             let _cxl = await pastebin.createPaste({text: db,title: "session_id",format: null,privacy: 1,});
-            const get_id = _cxl.replace("https://pastebin.com/", "");
+            const get_id = `Aqua~${_cxl.replace("https://pastebin.com/", "")}`;
             await conn.sendMessage(conn.user!.id, {text: `*Note:* Dont share this _id with anyone\n *_Session ID_*: ${get_id}`,});
             process.exit(0);
           }}
